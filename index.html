@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css">
+<title>DualCam</title>
+</head>
+<body>
+
+<div id="stage">
+  <video id="preview" playsinline muted autoplay></video>
+  <canvas id="vcanvas" hidden></canvas>
+
+  <!-- recorte vertical 9:16 sobreposto ao preview horizontal -->
+  <div id="cropOverlay" hidden>
+    <div class="shade" id="shadeL"></div>
+    <div class="cropbox" id="cropBox"><span>9:16</span></div>
+    <div class="shade" id="shadeR"></div>
+  </div>
+  <div id="grid" hidden><i></i><i></i><i></i><i></i></div>
+
+  <div id="hud">
+    <div id="recBadge" hidden><b></b><span id="timer">00:00</span></div>
+    <div id="info"></div>
+  </div>
+
+  <div id="toast"></div>
+</div>
+
+<!-- controles -->
+<div id="bar">
+  <div id="modes" role="radiogroup" aria-label="Modo de gravação">
+    <button data-mode="both" class="on">H + V</button>
+    <button data-mode="h">H</button>
+    <button data-mode="v">V</button>
+  </div>
+
+  <button id="recBtn" aria-label="Gravar"><span></span></button>
+
+  <div id="rightBtns">
+    <button id="flipBtn" class="ico" aria-label="Trocar câmera">⟲</button>
+    <button id="setBtn" class="ico" aria-label="Ajustes">⚙</button>
+  </div>
+</div>
+
+<!-- painel de ajustes -->
+<aside id="sheet" hidden>
+  <header>
+    <h2>Ajustes</h2>
+    <button id="closeSheet" class="ico" aria-label="Fechar">✕</button>
+  </header>
+  <div id="sheetBody">
+
+    <section>
+      <h3>Qualidade</h3>
+      <label>Resolução
+        <select id="selRes">
+          <option value="3840x2160">4K (2160p)</option>
+          <option value="1920x1080" selected>Full HD (1080p)</option>
+          <option value="1280x720">HD (720p)</option>
+        </select>
+      </label>
+      <label>Quadros por segundo
+        <select id="selFps">
+          <option value="24">24</option>
+          <option value="30" selected>30</option>
+          <option value="60">60</option>
+        </select>
+      </label>
+      <label>Taxa de bits (horizontal)
+        <select id="selBr">
+          <option value="auto" selected>Automática (máxima)</option>
+          <option value="8">8 Mbps</option>
+          <option value="16">16 Mbps</option>
+          <option value="25">25 Mbps</option>
+          <option value="40">40 Mbps</option>
+          <option value="60">60 Mbps</option>
+        </select>
+      </label>
+      <label>Câmera
+        <select id="selCam"></select>
+      </label>
+      <label class="check"><input type="checkbox" id="chkAudio" checked> Gravar áudio</label>
+      <label class="check"><input type="checkbox" id="chkRawAudio"> Áudio cru (sem cancelamento de eco/ruído)</label>
+    </section>
+
+    <section id="camControls">
+      <h3>Câmera</h3>
+      <div id="dynControls"></div>
+      <p class="hint" id="noCaps" hidden>Este aparelho/navegador não expõe controles manuais de câmera.</p>
+    </section>
+
+    <section>
+      <h3>Vertical</h3>
+      <label>Posição do recorte <output id="outCrop">centro</output>
+        <input type="range" id="rngCrop" min="0" max="100" value="50">
+      </label>
+      <p class="hint">Você também pode arrastar o retângulo 9:16 direto no preview.</p>
+    </section>
+
+    <section>
+      <h3>Tela</h3>
+      <label class="check"><input type="checkbox" id="chkGrid"> Grade (regra dos terços)</label>
+      <label class="check"><input type="checkbox" id="chkCrop" checked> Mostrar recorte vertical</label>
+    </section>
+
+    <section>
+      <button id="btnReset" class="wide">Restaurar padrões da câmera</button>
+    </section>
+  </div>
+</aside>
+
+<!-- resultado da gravação -->
+<div id="review" hidden>
+  <div class="card">
+    <h2>Gravação concluída</h2>
+    <div id="reviewList"></div>
+    <div class="row">
+      <button id="btnSaveSel" class="primary">Salvar selecionados</button>
+      <button id="btnShareSel">Compartilhar</button>
+    </div>
+    <div class="row">
+      <button id="btnDiscard" class="danger">Descartar</button>
+      <button id="btnCloseReview">Fechar</button>
+    </div>
+    <p class="hint" id="reviewHint"></p>
+  </div>
+</div>
+
+<!-- tela de início / permissões -->
+<div id="splash">
+  <div class="card">
+    <h1>DualCam</h1>
+    <p>Grava horizontal e vertical (9:16) ao mesmo tempo.</p>
+    <button id="btnStart" class="primary">Abrir câmera</button>
+    <button id="btnInstall" hidden>Instalar app</button>
+    <p class="hint" id="splashMsg"></p>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
